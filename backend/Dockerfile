@@ -30,7 +30,7 @@ COPY package*.json ./
 COPY tsconfig.json ./
 COPY prisma ./prisma/
 
-# Install production dependencies only
+# Install all dependencies (needed for prisma.config.ts execution)
 RUN npm install
 
 # Copy Prisma generated files from builder
