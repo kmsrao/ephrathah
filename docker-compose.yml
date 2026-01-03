@@ -35,7 +35,7 @@ services:
     container_name: ephrathah-frontend
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "3200:80"
     networks:
       - ephrathah-network
     depends_on:
