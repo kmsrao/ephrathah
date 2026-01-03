@@ -6,6 +6,7 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY prisma.config.js ./
 COPY prisma ./prisma/
 
 # Install dependencies (including dev dependencies for build)
@@ -28,9 +29,10 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY prisma.config.js ./
 COPY prisma ./prisma/
 
-# Install all dependencies (needed for prisma.config.ts execution)
+# Install all dependencies (needed for prisma.config.js execution)
 RUN npm install
 
 # Copy Prisma generated files from builder
