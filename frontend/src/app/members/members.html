@@ -1,0 +1,180 @@
+<div class="members-container">
+  <header class="members-header">
+    <div>
+      <h1>Member Management</h1>
+      <button class="back-btn" routerLink="/dashboard">Back to Dashboard</button>
+    </div>
+    <div class="header-actions">
+      <input
+        type="file"
+        #fileInput
+        accept=".csv"
+        style="display: none"
+        (change)="onFileSelected($event)"
+      />
+      <button class="import-btn" (click)="fileInput.click()">Import CSV</button>
+      <button class="export-btn" (click)="exportCSV()">Export CSV</button>
+      <button class="add-btn" (click)="showAdd()">Add New User</button>
+    </div>
+  </header>
+
+  <div class="messages">
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+    <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+  </div>
+
+  <div class="form-container" *ngIf="showAddForm">
+    <div class="form-card">
+      <h2>{{ editingUser ? 'Edit User' : 'Add New User' }}</h2>
+      <form [formGroup]="userForm" (ngSubmit)="submitForm()">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            formControlName="username"
+            [readonly]="!!editingUser"
+            placeholder="Enter username"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password {{ editingUser ? '(leave blank to keep current)' : '' }}</label>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            placeholder="Enter password (min 6 characters)"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="contactNumber">Contact Number</label>
+          <input
+            type="text"
+            id="contactNumber"
+            formControlName="contactNumber"
+            placeholder="Enter contact number"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="liveMode">Live Mode</label>
+          <select id="liveMode" formControlName="liveMode">
+            <option value="audio">Audio</option>
+            <option value="video">Video</option>
+          </select>
+        </div>
+
+        <div class="form-group" *ngIf="isAdmin()">
+          <label for="role">Role</label>
+          <select id="role" formControlName="role">
+            <option value="MEMBER">Member</option>
+            <option value="INCHARGE">Incharge</option>
+            <option value="ADMIN" *ngIf="!editingUser">Admin</option>
+          </select>
+        </div>
+
+        <div class="form-group" *ngIf="isAdmin() && userForm.get('role')?.value === 'MEMBER'">
+          <label for="inchargeId">Assign to Incharge (Optional)</label>
+          <select id="inchargeId" formControlName="inchargeId">
+            <option [ngValue]="null">-- No Incharge --</option>
+            <option *ngFor="let incharge of incharges" [ngValue]="incharge.id">
+              {{ incharge.username }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group features-section">
+          <label class="section-label">Enabled Features (for members)</label>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="watchLiveEnabled" />
+              <span>Watch Live</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="submitFeedbackEnabled" />
+              <span>Submit Feedback</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="submitAccountabilityEnabled" />
+              <span>Submit Accountability</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="submit-btn" [disabled]="!userForm.valid">
+            {{ editingUser ? 'Update' : 'Create' }}
+          </button>
+          <button type="button" class="cancel-btn" (click)="cancelForm()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="users-table">
+    <div *ngIf="users.length === 0" style="padding: 2rem; text-align: center; color: #666;">
+      <p>Loading users... (Total: {{ users.length }})</p>
+      <p>Current user: {{ currentUser?.username }} ({{ currentUser?.role }})</p>
+    </div>
+
+    <table *ngIf="users.length > 0">
+      <thead>
+        <tr>
+          <th class="sortable" (click)="sortBy('username')">
+            Username <span class="sort-icon">{{ getSortIcon('username') }}</span>
+          </th>
+          <th class="sortable" (click)="sortBy('contactNumber')">
+            Contact Number <span class="sort-icon">{{ getSortIcon('contactNumber') }}</span>
+          </th>
+          <th class="sortable" (click)="sortBy('liveMode')">
+            Live Mode <span class="sort-icon">{{ getSortIcon('liveMode') }}</span>
+          </th>
+          <th class="sortable" (click)="sortBy('role')">
+            Role <span class="sort-icon">{{ getSortIcon('role') }}</span>
+          </th>
+          <th>Assigned To</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.username }}</td>
+          <td>{{ user.contactNumber }}</td>
+          <td>{{ user.liveMode }}</td>
+          <td>
+            <span class="role-badge" [class.admin]="user.role === 'ADMIN'"
+                  [class.incharge]="user.role === 'INCHARGE'"
+                  [class.member]="user.role === 'MEMBER'">
+              {{ user.role }}
+            </span>
+          </td>
+          <td>
+            <span *ngIf="user.incharge">{{ user.incharge.username }} ({{ user.incharge.role }})</span>
+            <span *ngIf="!user.incharge" style="color: #999;">--</span>
+          </td>
+          <td class="actions">
+            <button
+              *ngIf="canEdit(user)"
+              class="edit-btn"
+              (click)="showEdit(user)"
+            >
+              Edit
+            </button>
+            <button
+              *ngIf="canDelete(user)"
+              class="delete-btn"
+              (click)="deleteUser(user)"
+            >
+              Delete
+            </button>
+            <span *ngIf="!canEdit(user) && !canDelete(user)" class="no-actions">
+              No actions
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

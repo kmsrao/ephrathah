@@ -1,0 +1,39 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>Live</h1>
+    <div class="user-info">
+      <span *ngIf="currentUser">
+        Welcome, {{ currentUser.username }} ({{ currentUser.role }})
+      </span>
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
+  <main class="dashboard-content">
+    <div class="dashboard-grid">
+      <div class="dashboard-card" *ngIf="canManageMembers()">
+        <h2>Member Management</h2>
+        <p>Add, edit, and remove members</p>
+        <button class="card-btn" routerLink="/members">Manage Members</button>
+      </div>
+
+      <div class="dashboard-card" *ngIf="currentUser?.watchLiveEnabled">
+        <h2>Watch Live</h2>
+        <p>Watch live streaming content</p>
+        <button class="card-btn" routerLink="/watch-live">Watch Live</button>
+      </div>
+
+      <div class="dashboard-card" *ngIf="currentUser?.submitFeedbackEnabled">
+        <h2>Submit Feedback</h2>
+        <p>Share your feedback with us</p>
+        <button class="card-btn" routerLink="/submit-feedback">Submit Feedback</button>
+      </div>
+
+      <div class="dashboard-card" *ngIf="currentUser?.submitAccountabilityEnabled">
+        <h2>Submit Accountability</h2>
+        <p>Submit your accountability report</p>
+        <button class="card-btn" routerLink="/submit-accountability">Submit Accountability</button>
+      </div>
+    </div>
+  </main>
+</div>

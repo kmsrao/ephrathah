@@ -1,0 +1,9 @@
+# Ignore local database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Ignore database dumps
+*.sql.gz
+*.dump
+backup_*.sql
