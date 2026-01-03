@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Backend Service (NestJS)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ephrathah-backend
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    environment:
+      DATABASE_URL: postgresql://ephrathahuser:WORD@rlwc@postgres-db:5432/ephrathahDB?schema=public
+      JWT_SECRET: EPHRATHAHSTREAMSECRETKEY
+      JWT_EXPIRATION: 24h
+      PORT: 3100
+      NODE_ENV: production
+    networks:
+      - postgres-network
+      - ephrathah-network
+    # Uncomment and add a health endpoint to your backend to enable healthcheck
+    # healthcheck:
+    #   test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3100/health || exit 1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 40s
+
+  # Frontend Service (Angular)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ephrathah-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    networks:
+      - ephrathah-network
+    depends_on:
+      - backend
+
+networks:
+  postgres-network:
+    external: true
+    name: postgres-network
+  ephrathah-network:
+    driver: bridge
+    name: ephrathah-network
