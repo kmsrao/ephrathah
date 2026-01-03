@@ -39,7 +39,8 @@
       "Bash(ping:*)",
       "Bash(cmd //c \"E:\\\\Church\\\\MediaPortal\\\\start.bat\")",
       "Bash(dir:*)",
-      "Bash(npm start)"
+      "Bash(npm start)",
+      "WebSearch"
     ]
   }
 }
