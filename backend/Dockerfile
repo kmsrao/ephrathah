@@ -5,6 +5,7 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+COPY tsconfig.json ./
 COPY prisma ./prisma/
 
 # Install dependencies (including dev dependencies for build)
@@ -26,6 +27,7 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+COPY tsconfig.json ./
 COPY prisma ./prisma/
 
 # Install production dependencies only
