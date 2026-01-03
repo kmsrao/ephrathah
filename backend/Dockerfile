@@ -7,9 +7,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm install --omit=dev
-
+# Install dependencies (including dev dependencies for build)
+RUN npm install
 
 # Generate Prisma client
 RUN npx prisma generate
@@ -30,8 +29,7 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Install production dependencies only
-RUN npm install --omit=dev
-
+RUN npm install
 
 # Copy Prisma generated files from builder
 COPY --from=builder /app/generated ./generated
