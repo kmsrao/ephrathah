@@ -42,7 +42,8 @@
       "Bash(npm start)",
       "WebSearch",
       "Bash(docker-compose logs:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(npm run start:prod:*)"
     ]
   }
 }
