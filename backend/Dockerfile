@@ -20,9 +20,6 @@ RUN npx prisma generate
 # Build the application
 RUN npm run build
 
-# Verify dist folder was created
-RUN ls -la dist/
-
 # Production stage
 FROM node:20-alpine
 
