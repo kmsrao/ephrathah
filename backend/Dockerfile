@@ -3,11 +3,13 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy all files needed for build
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY nest-cli.json ./
 COPY prisma.config.js ./
 COPY prisma ./prisma/
+COPY src ./src/
 
 # Install dependencies (including dev dependencies for build)
 RUN npm install
@@ -15,11 +17,11 @@ RUN npm install
 # Generate Prisma client
 RUN npx prisma generate
 
-# Copy source code
-COPY . .
-
 # Build the application
 RUN npm run build
+
+# Verify dist folder was created
+RUN ls -la dist/
 
 # Production stage
 FROM node:20-alpine

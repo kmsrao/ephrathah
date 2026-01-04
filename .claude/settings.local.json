@@ -40,7 +40,8 @@
       "Bash(cmd //c \"E:\\\\Church\\\\MediaPortal\\\\start.bat\")",
       "Bash(dir:*)",
       "Bash(npm start)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(docker-compose logs:*)"
     ]
   }
 }
